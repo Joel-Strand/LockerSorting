@@ -1,0 +1,7 @@
+
+built from top left to bottom right, in order of index
+index,name,x,y,(z),xScale,yScale,(zScale),`state\n
+0 index is always XY(Z) scale for the array
+x,y,z are top left cord for the space.
+
+0,
