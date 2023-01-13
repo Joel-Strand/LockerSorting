@@ -1,0 +1,11 @@
+ID's:
+0 = null
+1 = room
+2 = obj
+3 = stairs (?)
+
+format:
+id, connections
+id, connections
+
+(index is calculated by per-line increment + hallway nodes)

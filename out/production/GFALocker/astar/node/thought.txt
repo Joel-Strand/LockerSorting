@@ -1,7 +1,0 @@
-
-give each node x,y,z cords (top left) + x,y,z scale + attributes (room, hallway, etc.)
-organize each node into an ordered list
-create node[][][] bases on XYZ params provided in line 1
-go to first node in list, gather top left cords (all corners?)
-, then fill the array to
-(+X, +Y, +Z) based on X, Y and Z scale.

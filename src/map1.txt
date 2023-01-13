@@ -1,0 +1,9 @@
+hallway one: (a/b denotes side of hallway)
+hallway length
+a109,a
+a110,a
+a111,a
+a112,b
+a113,b
+a114,b
+(some delimiter to denote next hallway)
