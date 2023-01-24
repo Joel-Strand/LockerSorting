@@ -1,3 +1,3 @@
 public interface INode {
-    boolean addEdge(Node destination, float weight, boolean hasLockers);
+    boolean addEdge(Node destination, double[] weight, boolean hasLockers);
 }
