@@ -1,9 +1,13 @@
+import java.util.ArrayList;
+
 public class Edge {
     Node source, destination;
-    float weight;
+    double weight;
     boolean hasLockers;
 
-    public Edge(Node source, Node destination, float weight, boolean hasLockers) {
+    ArrayList<String> lockers; // come back to this
+
+    public Edge(Node source, Node destination, double weight, boolean hasLockers) {
         this.source = source;
         this.destination = destination;
         this.weight = weight;
