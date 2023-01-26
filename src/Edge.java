@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class Edge {
     Node source, destination;
-    double[] weight;
+    double[] weight; // x, y, z (floor level)
     boolean hasLockers;
 
     ArrayList<String> lockers; // come back to this

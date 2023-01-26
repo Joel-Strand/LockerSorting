@@ -6,17 +6,18 @@ import java.util.Scanner;
 
 public class Graph implements IGraph {
     int vertexCount;
-    ArrayList<Node> nodes;  // make this a hashmap too??
-    ArrayList<Node> stairs;
     HashMap<String, double[]> distances;
+    HashMap<String, Node> nodes;
+    HashMap<String, Node> stairs;
+
 
     public Graph() {
-        this.nodes = new ArrayList<>();
+        this.nodes = new HashMap<>();
         distances = new HashMap<>();
     }
 
     public Graph(String mapPath, String conPath) {
-        this.nodes = new ArrayList<>();
+        this.nodes = new HashMap<>();
         this.distances = new HashMap<>();
 
         try {
@@ -24,11 +25,7 @@ public class Graph implements IGraph {
             File con = new File(conPath);
             Scanner scanner = new Scanner(map);
 
-            ArrayList<Node> nodesToAdd = new ArrayList<>();
-            ArrayList<Node> stairsToAdd = new ArrayList<>();
-
-
-            // Initialize all Nodes
+            // Initialize all nodes
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
@@ -38,36 +35,28 @@ public class Graph implements IGraph {
                 int z = Integer.parseInt(info[3]);
                 Node node = new Node(id,x,y,z);
                 if (info[0].equals("st")) {
-                    stairsToAdd.add(node);
+                    nodes.put(node.id,node);
                 } else {
-                    nodesToAdd.add(node);
+                    stairs.put(node.id,node);
                 }
             }
 
+            // Connect Edges
             scanner = new Scanner(con);
 
             // this will need to be updated
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
-                String sourceId = info[0];
-                boolean hasLockers = Integer.parseInt(info[1]) == 1;
-                Node source = null, destination = null;
+                Node source = nodes.get(info[0]);
 
-                for (int i = 2; i < info.length; i++) {
-                    String idToSearch = info[i];
-                    for (Node n : nodesToAdd) {
-                        if (n.id.equals(sourceId))   { source      = n; }
-                        if (n.id.equals(idToSearch)) { destination = n; }
-                    }
+                for (int i = 1; i < info.length; i++) {
+                    Node destination = nodes.get(info[i+1]);
                     double[] weight = weight(source, destination);
-                    add(source, destination, weight, hasLockers);
-
-                    assert source != null;
-                    assert destination != null;
-                    distances.put(source.id + destination.id, weight);
+                    boolean hasLockers = Integer.parseInt(info[i]) == 1;
+                    source.addEdge(destination, weight, hasLockers);
+                    destination.addEdge(destination, weight, hasLockers);
                 }
-
             }
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
@@ -92,34 +81,21 @@ public class Graph implements IGraph {
     public boolean add(Node source, Node destination, double[] weight,
                        boolean hasLockers) {
         vertexCount++;
-        if (!this.nodes.contains(source))      { nodes.add(source); }
-        if (!this.nodes.contains(destination)) { nodes.add(destination); }
+        if (!this.nodes.containsKey(source.id))      { nodes.put(source.id, source); }
+        if (!this.nodes.containsKey(destination.id)) { nodes.put(destination.id, destination); }
 
         return source.addEdge(destination, weight, hasLockers) &&
                 destination.addEdge(source, weight, hasLockers);
-
     }
 
     @Override
     public void printGraph() {
-        for (Node n : nodes) {
-            for (Edge e : n.connections) {
-                System.out.println(e.source.id + " -> " + e.destination.id);
-            }
-        }
+        // change for hashmap
      }
 
     @Override
     public int size() {
         return vertexCount;
-    }
-
-    @Override
-    public Node get(Node node) {
-        for (Node n : nodes) {
-            if (n.equals(node)) { return node; }
-        }
-        return null;
     }
 
     public static void main(String[] args) {
