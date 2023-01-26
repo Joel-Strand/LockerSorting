@@ -1,18 +1,23 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Scanner;
 
-public class Graph implements IGraph{
+public class Graph implements IGraph {
     int vertexCount;
-    ArrayList<Node> nodes;
+    ArrayList<Node> nodes;  // make this a hashmap too??
+    ArrayList<Node> stairs;
+    HashMap<String, double[]> distances;
 
     public Graph() {
         this.nodes = new ArrayList<>();
+        distances = new HashMap<>();
     }
 
     public Graph(String mapPath, String conPath) {
         this.nodes = new ArrayList<>();
+        this.distances = new HashMap<>();
 
         try {
             File map = new File(mapPath);
@@ -20,24 +25,33 @@ public class Graph implements IGraph{
             Scanner scanner = new Scanner(map);
 
             ArrayList<Node> nodesToAdd = new ArrayList<>();
+            ArrayList<Node> stairsToAdd = new ArrayList<>();
+
 
             // Initialize all Nodes
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
+                String id = info[0];
                 int x = Integer.parseInt(info[1]);
                 int y = Integer.parseInt(info[2]);
                 int z = Integer.parseInt(info[3]);
-                nodesToAdd.add(new Node(info[0], x, y, z));
+                Node node = new Node(id,x,y,z);
+                if (info[0].equals("st")) {
+                    stairsToAdd.add(node);
+                } else {
+                    nodesToAdd.add(node);
+                }
             }
 
             scanner = new Scanner(con);
 
+            // this will need to be updated
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
-                boolean hasLockers = Integer.parseInt(info[0]) == 1;
-                String sourceId = info[1];
+                String sourceId = info[0];
+                boolean hasLockers = Integer.parseInt(info[1]) == 1;
                 Node source = null, destination = null;
 
                 for (int i = 2; i < info.length; i++) {
@@ -46,7 +60,12 @@ public class Graph implements IGraph{
                         if (n.id.equals(sourceId))   { source      = n; }
                         if (n.id.equals(idToSearch)) { destination = n; }
                     }
-                    add(source, destination, weight(source, destination), hasLockers);
+                    double[] weight = weight(source, destination);
+                    add(source, destination, weight, hasLockers);
+
+                    assert source != null;
+                    assert destination != null;
+                    distances.put(source.id + destination.id, weight);
                 }
 
             }
