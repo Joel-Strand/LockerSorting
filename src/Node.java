@@ -21,9 +21,23 @@ public class Node implements INode {
                            double[] weight, boolean hasLockers) {
         Edge edge = new Edge(this, destination, weight, hasLockers);
 
-        if (!connections.contains(edge)) {
+        if (!matching(edge)) {
             connections.add(edge);
             return true;
+        }
+        return false;
+    }
+
+    private boolean matching(Edge e) {
+        Node source1 = e.source;
+        Node dest1 = e.destination;
+        for (Edge connection : connections) {
+            Node source2 = connection.source;
+            Node dest2 = connection.destination;
+            // Checks if the node values are found in a different node (equivalence)
+            if ((source1 == source2 || source1 == dest2) && (dest1 == source2 || dest1 == dest2)) {
+                return true;
+            }
         }
         return false;
     }

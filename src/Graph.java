@@ -1,15 +1,12 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class Graph implements IGraph {
     int vertexCount;
     HashMap<String, double[]> distances;
     HashMap<String, Node> nodes;
     HashMap<String, Node> stairs;
-
 
     public Graph() {
         this.nodes = new HashMap<>();
@@ -19,6 +16,7 @@ public class Graph implements IGraph {
     public Graph(String mapPath, String conPath) {
         this.nodes = new HashMap<>();
         this.distances = new HashMap<>();
+        this.stairs = new HashMap<>();
 
         try {
             File map = new File(mapPath);
@@ -34,7 +32,7 @@ public class Graph implements IGraph {
                 int y = Integer.parseInt(info[2]);
                 int z = Integer.parseInt(info[3]);
                 Node node = new Node(id,x,y,z);
-                if (info[0].equals("st")) {
+                if (!info[0].equals("st")) {
                     nodes.put(node.id,node);
                 } else {
                     stairs.put(node.id,node);
@@ -44,18 +42,17 @@ public class Graph implements IGraph {
             // Connect Edges
             scanner = new Scanner(con);
 
-            // this will need to be updated
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
                 Node source = nodes.get(info[0]);
 
-                for (int i = 1; i < info.length; i++) {
+                for (int i = 1; i < info.length - 1; i += 2) {
                     Node destination = nodes.get(info[i+1]);
                     double[] weight = weight(source, destination);
                     boolean hasLockers = Integer.parseInt(info[i]) == 1;
                     source.addEdge(destination, weight, hasLockers);
-                    destination.addEdge(destination, weight, hasLockers);
+                    destination.addEdge(source, weight, hasLockers);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -90,16 +87,30 @@ public class Graph implements IGraph {
 
     @Override
     public void printGraph() {
-        // change for hashmap
-     }
+        for (Map.Entry<String, Node> mE : nodes.entrySet()) {
+            for (int i = 0; i < mE.getValue().connections.size(); i++) {
+                Edge edge = mE.getValue().connections.get(i);
+                Node source = edge.source;
+                Node dest = edge.destination;
+                System.out.println(source.id + " -> " + dest.id);
+            }
+        }
+    }
 
     @Override
     public int size() {
         return vertexCount;
     }
 
+    @Override
+    public Node get(Node node) {
+        return nodes.get(node.id);
+    }
+
     public static void main(String[] args) {
+        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/map1.txt",
+                "/Users/strandj23/Documents/Coding/AStar/src/con2.txt");
 
-
+        g.printGraph();
     }
 }
