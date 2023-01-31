@@ -9,11 +9,13 @@ public class Graph implements IGraph {
     HashMap<String, Node> stairs;
 
     public Graph() {
+        this.vertexCount = 0;
         this.nodes = new HashMap<>();
         distances = new HashMap<>();
     }
 
     public Graph(String mapPath, String conPath) {
+        this.vertexCount = 0;
         this.nodes = new HashMap<>();
         this.distances = new HashMap<>();
         this.stairs = new HashMap<>();
@@ -32,11 +34,12 @@ public class Graph implements IGraph {
                 int y = Integer.parseInt(info[2]);
                 int z = Integer.parseInt(info[3]);
                 Node node = new Node(id,x,y,z);
-                if (!info[0].equals("st")) {
-                    nodes.put(node.id,node);
+                if (info[0].startsWith("st")) {
+                    stairs.put(node.id.toLowerCase(), node);
                 } else {
-                    stairs.put(node.id,node);
+                    nodes.put(node.id.toLowerCase(), node);
                 }
+                this.vertexCount++;
             }
 
             // Connect Edges
@@ -45,10 +48,16 @@ public class Graph implements IGraph {
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
-                Node source = nodes.get(info[0]);
+                Node source;
+                if (info[0].startsWith("st")) {
+                    source = stairs.get(info[0].toLowerCase());
+                } else {
+                    source = nodes.get(info[0].toLowerCase());
+                }
+
 
                 for (int i = 1; i < info.length - 1; i += 2) {
-                    Node destination = nodes.get(info[i+1]);
+                    Node destination = nodes.get(info[i+1].toLowerCase());
                     double[] weight = weight(source, destination);
                     boolean hasLockers = Integer.parseInt(info[i]) == 1;
                     source.addEdge(destination, weight, hasLockers);
@@ -108,8 +117,8 @@ public class Graph implements IGraph {
     }
 
     public static void main(String[] args) {
-        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/map1.txt",
-                "/Users/strandj23/Documents/Coding/AStar/src/con2.txt");
+        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/gfaRooms.txt",
+                "/Users/strandj23/Documents/Coding/AStar/src/gfaCon.txt");
 
         g.printGraph();
     }
