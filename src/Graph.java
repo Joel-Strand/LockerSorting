@@ -55,7 +55,6 @@ public class Graph implements IGraph {
                     source = nodes.get(info[0].toLowerCase());
                 }
 
-
                 for (int i = 1; i < info.length - 1; i += 2) {
                     Node destination = nodes.get(info[i+1].toLowerCase());
                     double[] weight = weight(source, destination);
@@ -68,19 +67,6 @@ public class Graph implements IGraph {
             System.out.println("File not found");
             e.printStackTrace();
         }
-    }
-
-    private static double[] weight(Node source, Node destination) {
-        if (source == null || destination == null) {
-            System.out.println("Null Parameter Used in weight()");
-            return null;
-        }
-
-        double[] cords = new double[3];
-        cords[0] = Math.abs(destination.x - source.x); // dx
-        cords[1] = Math.abs(destination.y - source.y); // dy
-        cords[2] = Math.abs(destination.z - source.z); // dz
-        return cords;
     }
 
     @Override
@@ -114,6 +100,19 @@ public class Graph implements IGraph {
     @Override
     public Node get(Node node) {
         return nodes.get(node.id);
+    }
+
+    private static double[] weight(Node source, Node destination) {
+        if (source == null || destination == null) {
+            System.out.println("Null Parameter Used in weight()");
+            return null;
+        }
+
+        double[] cords = new double[3];
+        cords[0] = Math.abs(destination.x - source.x); // dx
+        cords[1] = Math.abs(destination.y - source.y); // dy
+        cords[2] = Math.abs(destination.z - source.z); // dz
+        return cords;
     }
 
     public static void main(String[] args) {

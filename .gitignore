@@ -3,7 +3,8 @@
 /.idea/workspace.xml
 
 /.idea/vcs.xml/
-/out/production/
+/out
+/out/production
 
 
 *.xml
