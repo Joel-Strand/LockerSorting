@@ -2,6 +2,9 @@ import java.util.ArrayList;
 
 public class Node implements INode {
     int x, y, z; // type: 0 = room, 1 = hallway // id: index from csv
+
+    Double f, g, h;
+
     String id;
     ArrayList<Edge> connections;
 
@@ -46,5 +49,15 @@ public class Node implements INode {
             }
         }
         return false;
+    }
+
+    void updateF(double f) {
+        this.f = f;
+    }
+    void updateH(double h) {
+        this.h = h;
+    }
+    void updateG(double g) {
+        this.g = g;
     }
 }

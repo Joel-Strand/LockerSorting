@@ -7,11 +7,13 @@ public class Graph implements IGraph {
     HashMap<String, double[]> distances;
     HashMap<String, Node> nodes;
     HashMap<String, Node> stairs;
+    HashMap<String, Node> composite;
 
     public Graph() {
         this.vertexCount = 0;
         this.nodes = new HashMap<>();
-        distances = new HashMap<>();
+        this.distances = new HashMap<>();
+        this.composite = new HashMap<>();
     }
 
     public Graph(String mapPath, String conPath) {
@@ -19,7 +21,7 @@ public class Graph implements IGraph {
         this.nodes = new HashMap<>();
         this.distances = new HashMap<>();
         this.stairs = new HashMap<>();
-
+        this.composite = new HashMap<>();
         try {
             File map = new File(mapPath);
             File con = new File(conPath);
@@ -35,10 +37,12 @@ public class Graph implements IGraph {
                 int z = Integer.parseInt(info[3]);
                 Node node = new Node(id,x,y,z);
                 if (info[0].startsWith("st")) {
-                    stairs.put(node.id.toLowerCase(), node);
+                    this.stairs.put(node.id.toLowerCase(), node);
                 } else {
-                    nodes.put(node.id.toLowerCase(), node);
+                    this.nodes.put(node.id.toLowerCase(), node);
                 }
+                Node copy = node;
+                this.composite.put(copy.id.toLowerCase(), copy);
                 this.vertexCount++;
             }
 
@@ -56,7 +60,14 @@ public class Graph implements IGraph {
                 }
 
                 for (int i = 1; i < info.length - 1; i += 2) {
-                    Node destination = nodes.get(info[i+1].toLowerCase());
+                    String s = info[i+1].toLowerCase();
+                    Node destination;
+                    if (s.startsWith("st")) {
+                        destination = stairs.get(s);
+                    } else {
+                        destination = nodes.get(s);
+                    }
+
                     double[] weight = weight(source, destination);
                     boolean hasLockers = Integer.parseInt(info[i]) == 1;
                     source.addEdge(destination, weight, hasLockers);
@@ -98,8 +109,8 @@ public class Graph implements IGraph {
     }
 
     @Override
-    public Node get(Node node) {
-        return nodes.get(node.id);
+    public Node get(String nodeId) {
+        return composite.get(nodeId.toLowerCase());
     }
 
     private static double[] weight(Node source, Node destination) {
