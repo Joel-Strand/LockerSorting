@@ -1,9 +1,11 @@
 import java.util.ArrayList;
 
 public class Node implements INode {
-    int x, y, z; // type: 0 = room, 1 = hallway // id: index from csv
+    double x, y, z; // type: 0 = room, 1 = hallway // id: index from csv
 
     Double f, g, h;
+
+    final double FLOOR_CONSTANT = 8.556d;  // FOR GFA ONLY, [(numStairs * stairHeight) / 12] * 6.576
 
     String id;
     ArrayList<Edge> connections;
@@ -21,7 +23,7 @@ public class Node implements INode {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.z = z;
+        this.z = z * FLOOR_CONSTANT ;
         this.connections = new ArrayList<>();
     }
 

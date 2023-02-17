@@ -41,8 +41,7 @@ public class Graph implements IGraph {
                 } else {
                     this.nodes.put(node.id.toLowerCase(), node);
                 }
-                Node copy = node;
-                this.composite.put(copy.id.toLowerCase(), copy);
+                this.composite.put(node.id.toLowerCase(), node);
                 this.vertexCount++;
             }
 

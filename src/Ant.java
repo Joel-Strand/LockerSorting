@@ -2,7 +2,7 @@ import java.util.*;
 
 public class Ant implements IPath, IScore {
 
-    private Graph graph;
+    private final Graph graph;
 
     public Ant(Graph g) {
         this.graph = g;
@@ -35,8 +35,10 @@ public class Ant implements IPath, IScore {
         while (!priorityQueue.isEmpty()) {
             current = priorityQueue.remove();
             if (!visited.contains(current)) {
+                if (current.equals(b)) {
+                    return reconstructPath(parents, a, b);
+                }
                 visited.add(current);
-                if (current.equals(b)) return reconstructPath(parents,b);  // is this the problem?
                 HashSet<Node> neighbors = getNeighbors(current);
                 for (Node neighbor : neighbors) {
                     if (!visited.contains(neighbor)) {
@@ -50,6 +52,9 @@ public class Ant implements IPath, IScore {
                             neighbor.g = g;
                             neighbor.h = h;
                             parents.put(neighbor,current);
+//                            System.out.println("KEY: " + neighbor.id);
+//                            System.out.println("VAL: " + current.id);
+//                            System.out.println("____");
                             priorityQueue.add(neighbor);
                         }
                     }
@@ -59,12 +64,23 @@ public class Ant implements IPath, IScore {
         return null;
     }
 
-    private ArrayList<Node> reconstructPath(HashMap<Node, Node> parents, Node b) {
+    private ArrayList<Node> reconstructPath(HashMap<Node, Node> parents, Node a, Node b) {
         ArrayList<Node> path = new ArrayList<>();
+        path.add(b);
 
-        for (Map.Entry<Node, Node> mE : parents.entrySet()) {
-            path.add(mE.getValue());
+        Node ptr = parents.get(b);
+        while (true) {
+            Node temp = parents.get(ptr);
+            if (!temp.equals(a)) {
+                path.add(ptr);
+                ptr = temp;
+            } else {
+                path.add(ptr);
+                path.add(a);
+                break;
+            }
         }
+        Collections.reverse(path);
         return path;
     }
 
@@ -85,16 +101,21 @@ public class Ant implements IPath, IScore {
     }
 
     private PriorityQueue<Node> initQueue() {
-        return new PriorityQueue<>(100, Comparator.comparing(x -> x.g)); // Lambda expression
+        return new PriorityQueue<>(100, Comparator.comparing(x -> x.f)); // Lambda expression
     }
 
     public static void main(String[] args) {
-        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/map1.txt","/Users/strandj23/Documents/Coding/AStar/src/con1.txt");
+        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/matrixTestingMap.txt",
+                "/Users/strandj23/Documents/Coding/AStar/src/matrixTestingCon.txt");
 
        Ant a = new Ant(g);
        Node n1 = g.get("a100");
-       Node n2 = g.get("b100");
-       System.out.println(a.findShortestPath(n1, n2));
+       Node n2 = g.get("a103");
+       List<Node> list = a.findShortestPath(n1,n2);
+
+       for (Node n : list) {
+           System.out.println(n.id);
+       }
 
     }
 
