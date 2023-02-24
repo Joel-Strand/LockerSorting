@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+
 public interface INode {
-    boolean addEdge(Node destination, double[] weight, boolean hasLockers);
+    boolean addEdge(Node destination, double[] weight,
+                    boolean hasLockers, ArrayList<String> lockers);
 }

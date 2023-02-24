@@ -28,14 +28,15 @@ public class Node implements INode {
     }
 
     @Override
-    public boolean addEdge(Node destination,
-                           double[] weight, boolean hasLockers) {
-        Edge edge = new Edge(this, destination, weight, hasLockers);
+    public boolean addEdge(Node destination, double[] weight,
+                           boolean hasLockers, ArrayList<String> lockers) {
+        Edge edge = new Edge(this, destination, weight, hasLockers, lockers);
 
         if (!matching(edge)) {
             connections.add(edge);
             return true;
         }
+
         return false;
     }
 

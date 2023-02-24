@@ -51,14 +51,28 @@ public class Graph implements IGraph {
             while (scanner.hasNextLine()) {
                 String _info = scanner.nextLine();
                 String[] info = _info.split(",");
+                String originId = info[0];
                 Node source;
-                if (info[0].startsWith("st")) {
-                    source = stairs.get(info[0].toLowerCase());
+                if (originId.startsWith("st")) {
+                    source = stairs.get(originId.toLowerCase());
                 } else {
-                    source = nodes.get(info[0].toLowerCase());
+                    source = nodes.get(originId.toLowerCase());
                 }
 
                 for (int i = 1; i < info.length - 1; i += 2) {
+                    ArrayList<String> lockers = new ArrayList<>();
+                    boolean hasLockers;
+                    if (info[i].startsWith("[")) {
+                        String[] lockerInfo = info[i].split("\\.");
+                        for (int j = 0; j < lockerInfo.length; j++) {
+                            String temp = lockerInfo[j].toLowerCase();
+                            lockerInfo[j] = temp;
+                        }
+                        lockers.addAll(Arrays.asList(lockerInfo));
+                        hasLockers = true;
+                    } else {
+                        hasLockers = false;
+                    }
                     String s = info[i+1].toLowerCase();
                     Node destination;
                     if (s.startsWith("st")) {
@@ -68,9 +82,8 @@ public class Graph implements IGraph {
                     }
 
                     double[] weight = weight(source, destination);
-                    boolean hasLockers = Integer.parseInt(info[i]) == 1;
-                    source.addEdge(destination, weight, hasLockers);
-                    destination.addEdge(source, weight, hasLockers);
+                    source.addEdge(destination, weight, hasLockers, lockers);
+                    destination.addEdge(source, weight, hasLockers, lockers);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -81,13 +94,13 @@ public class Graph implements IGraph {
 
     @Override
     public boolean add(Node source, Node destination, double[] weight,
-                       boolean hasLockers) {
+                       boolean hasLockers, ArrayList<String> lockers) {
         vertexCount++;
         if (!this.nodes.containsKey(source.id))      { nodes.put(source.id, source); }
         if (!this.nodes.containsKey(destination.id)) { nodes.put(destination.id, destination); }
 
-        return source.addEdge(destination, weight, hasLockers) &&
-                destination.addEdge(source, weight, hasLockers);
+        return source.addEdge(destination, weight, hasLockers, lockers) &&
+                destination.addEdge(source, weight, hasLockers, lockers);
     }
 
     @Override

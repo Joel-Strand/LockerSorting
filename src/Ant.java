@@ -9,7 +9,10 @@ public class Ant implements IPath, IScore {
     }
 
     @Override
-    public ArrayList<Node> findShortestPath(Node a, Node b) {
+    public ArrayList<Node> findShortestPath(String class1, String class2) {
+
+        Node a = graph.get(class1);
+        Node b = graph.get(class2);
 
         // Null Parameter Handling
         if (a == null) {
@@ -52,9 +55,6 @@ public class Ant implements IPath, IScore {
                             neighbor.g = g;
                             neighbor.h = h;
                             parents.put(neighbor,current);
-//                            System.out.println("KEY: " + neighbor.id);
-//                            System.out.println("VAL: " + current.id);
-//                            System.out.println("____");
                             priorityQueue.add(neighbor);
                         }
                     }
@@ -67,8 +67,15 @@ public class Ant implements IPath, IScore {
     private ArrayList<Node> reconstructPath(HashMap<Node, Node> parents, Node a, Node b) {
         ArrayList<Node> path = new ArrayList<>();
         path.add(b);
-
         Node ptr = parents.get(b);
+
+        // Handles one-edge case
+        if (parents.get(ptr) == null) {
+            path.add(a);
+            Collections.reverse(path);
+            return path;
+        }
+
         while (true) {
             Node temp = parents.get(ptr);
             if (!temp.equals(a)) {
@@ -110,8 +117,8 @@ public class Ant implements IPath, IScore {
 
        Ant a = new Ant(g);
        Node n1 = g.get("a100");
-       Node n2 = g.get("a103");
-       List<Node> list = a.findShortestPath(n1,n2);
+       Node n2 = g.get("a105");
+       List<Node> list = a.findShortestPath("a100","a105");
 
        for (Node n : list) {
            System.out.println(n.id);
