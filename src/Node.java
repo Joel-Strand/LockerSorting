@@ -23,13 +23,13 @@ public class Node implements INode {
         this.id = id;
         this.x = x;
         this.y = y;
-        this.z = z * FLOOR_CONSTANT ;
+        this.z = z * FLOOR_CONSTANT;
         this.connections = new ArrayList<>();
     }
 
     @Override
     public boolean addEdge(Node destination, double[] weight,
-                           boolean hasLockers, ArrayList<String> lockers) {
+                           boolean hasLockers, ArrayList<Locker> lockers) {
         Edge edge = new Edge(this, destination, weight, hasLockers, lockers);
 
         if (!matching(edge)) {

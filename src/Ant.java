@@ -112,12 +112,10 @@ public class Ant implements IPath, IScore {
     }
 
     public static void main(String[] args) {
-        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/matrixTestingMap.txt",
-                "/Users/strandj23/Documents/Coding/AStar/src/matrixTestingCon.txt");
+        Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/map1.txt",
+                "/Users/strandj23/Documents/Coding/AStar/src/con2.txt");
 
        Ant a = new Ant(g);
-       Node n1 = g.get("a100");
-       Node n2 = g.get("a105");
        List<Node> list = a.findShortestPath("a100","a105");
 
        for (Node n : list) {

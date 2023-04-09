@@ -4,13 +4,16 @@ import java.util.*;
 
 public class Graph implements IGraph {
     int vertexCount;
+    ArrayList<Edge> edges;
     HashMap<String, double[]> distances;
     HashMap<String, Node> nodes;
     HashMap<String, Node> stairs;
     HashMap<String, Node> composite;
 
+
     public Graph() {
         this.vertexCount = 0;
+        this.edges = new ArrayList<>();
         this.nodes = new HashMap<>();
         this.distances = new HashMap<>();
         this.composite = new HashMap<>();
@@ -18,6 +21,7 @@ public class Graph implements IGraph {
 
     public Graph(String mapPath, String conPath) {
         this.vertexCount = 0;
+        this.edges = new ArrayList<>();
         this.nodes = new HashMap<>();
         this.distances = new HashMap<>();
         this.stairs = new HashMap<>();
@@ -26,6 +30,7 @@ public class Graph implements IGraph {
             File map = new File(mapPath);
             File con = new File(conPath);
             Scanner scanner = new Scanner(map);
+            Node node = null;
 
             // Initialize all nodes
             while (scanner.hasNextLine()) {
@@ -35,7 +40,7 @@ public class Graph implements IGraph {
                 int x = Integer.parseInt(info[1]);
                 int y = Integer.parseInt(info[2]);
                 int z = Integer.parseInt(info[3]);
-                Node node = new Node(id,x,y,z);
+                node = new Node(id,x,y,z);
                 if (info[0].startsWith("st")) {
                     this.stairs.put(node.id.toLowerCase(), node);
                 } else {
@@ -59,20 +64,23 @@ public class Graph implements IGraph {
                     source = nodes.get(originId.toLowerCase());
                 }
 
+
                 for (int i = 1; i < info.length - 1; i += 2) {
-                    ArrayList<String> lockers = new ArrayList<>();
+                    ArrayList<Locker> lockers = new ArrayList<>();
                     boolean hasLockers;
-                    if (info[i].startsWith("[")) {
+                    String stuff = info[i];
+                    if (!stuff.equals("0")) {
                         String[] lockerInfo = info[i].split("\\.");
-                        for (int j = 0; j < lockerInfo.length; j++) {
-                            String temp = lockerInfo[j].toLowerCase();
-                            lockerInfo[j] = temp;
+                        for (String s : lockerInfo) {
+                            assert node != null;
+                            Locker temp = new Locker(node.x, node.y, node.z, s.toLowerCase());
+                            lockers.add(temp);
                         }
-                        lockers.addAll(Arrays.asList(lockerInfo));
                         hasLockers = true;
                     } else {
                         hasLockers = false;
                     }
+
                     String s = info[i+1].toLowerCase();
                     Node destination;
                     if (s.startsWith("st")) {
@@ -82,8 +90,10 @@ public class Graph implements IGraph {
                     }
 
                     double[] weight = weight(source, destination);
+                    edges.add(new Edge(source, destination, weight, hasLockers, lockers));
                     source.addEdge(destination, weight, hasLockers, lockers);
                     destination.addEdge(source, weight, hasLockers, lockers);
+                    removeDuplicates(this.edges);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -94,7 +104,7 @@ public class Graph implements IGraph {
 
     @Override
     public boolean add(Node source, Node destination, double[] weight,
-                       boolean hasLockers, ArrayList<String> lockers) {
+                       boolean hasLockers, ArrayList<Locker> lockers) {
         vertexCount++;
         if (!this.nodes.containsKey(source.id))      { nodes.put(source.id, source); }
         if (!this.nodes.containsKey(destination.id)) { nodes.put(destination.id, destination); }
@@ -138,10 +148,42 @@ public class Graph implements IGraph {
         return cords;
     }
 
+    private void removeDuplicates(ArrayList<Edge> edges) {
+        ArrayList<Edge> finalEdges = new ArrayList<>();
+
+        finalEdges.add(edges.get(0));
+        edges.remove(0);
+
+        boolean found;
+        for (Edge edge : edges) {
+            found = false;
+            for (Edge finalEdge : finalEdges) {
+                if (edge.matching(finalEdge)) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                finalEdges.add(edge);
+            }
+        }
+        this.edges = finalEdges;
+    }
+
+    public Edge getEdge(String node1, String node2) {
+        for (Edge e : edges) {
+            if ((e.source.id.equals(node1) && e.destination.id.equals(node2))
+                    || (e.source.id.equals(node2) && e.destination.id.equals(node1))) {
+                return e;
+            }
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         Graph g = new Graph("/Users/strandj23/Documents/Coding/AStar/src/gfaRooms.txt",
                 "/Users/strandj23/Documents/Coding/AStar/src/gfaCon.txt");
 
         g.printGraph();
+        System.out.println(g.edges);
     }
 }
